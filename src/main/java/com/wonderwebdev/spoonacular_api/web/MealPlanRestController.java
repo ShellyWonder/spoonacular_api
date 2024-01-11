@@ -37,9 +37,9 @@ public class MealPlanRestController {
 		URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl + path)
 				.queryParam("apiKey", apiKey)
 				.queryParam("timeFrame", "week")
-				.queryParam("targetCalories", numCalories)
-				.queryParam("diet", diet)
-				.queryParam("exclude", exclusions)
+				.queryParam("targetCalories", numCalories, numCalories != null)
+				.queryParam("diet", diet, diet != null)
+				.queryParam("exclude", exclusions, exclusions != null)
 				.build()
 				.toUri();
 		
