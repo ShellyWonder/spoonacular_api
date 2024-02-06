@@ -26,72 +26,49 @@ public class MealPlanRestController {
     
 	 private static final Logger logger = LoggerFactory.getLogger(MealPlanRestController.class);
 
-    @GetMapping("/mealplanner/week")
-    public ResponseEntity<String> getWeekMeals(
-            @RequestParam(value = "targetCalories", required = false) String numCalories,
-            @RequestParam(required = false) String diet,
-            @RequestParam(value = "exclude", required = false) String exclusions) {
+	 @GetMapping("/mealplanner/week")
+	    public ResponseEntity<String> getWeekMeals(
+	            @RequestParam(value = "targetCalories", required = false) String numCalories,
+	            @RequestParam(required = false) String diet,
+	            @RequestParam(value = "exclude", required = false) String exclusions) {
+	        
+	        URI uri = buildUri("week", numCalories, diet, exclusions);
+	        return makeRequest(uri);
+	    }
 
-        RestTemplate restTemplate = new RestTemplate();
-        
-       
-        // Building the URI
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + path)
-                .queryParam("apiKey", apiKey)
-                .queryParam("timeFrame", "week");
+	    @GetMapping("/mealplanner/day")
+	    public ResponseEntity<String> getDayMeals(
+	            @RequestParam(value = "targetCalories", required = false) String numCalories,
+	            @RequestParam(required = false) String diet,
+	            @RequestParam(value = "exclude", required = false) String exclusions) {
 
-        if (numCalories != null && !numCalories.isEmpty()) {
-            builder.queryParam("targetCalories", numCalories);
-        }
-        if (diet != null && !diet.isEmpty()) {
-            builder.queryParam("diet", diet);
-        }
-        if (exclusions != null && !exclusions.isEmpty()) {
-            builder.queryParam("exclude", exclusions);
-        }
+	        URI uri = buildUri("day", numCalories, diet, exclusions);
+	        return makeRequest(uri);
+	    }
 
-        URI uri = builder.build().toUri();
+	    private URI buildUri(String timeFrame, String numCalories, String diet, String exclusions) {
+	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + path)
+	                .queryParam("apiKey", apiKey)
+	                .queryParam("timeFrame", timeFrame);
 
+	        if (numCalories != null && !numCalories.isEmpty()) {
+	            builder.queryParam("targetCalories", numCalories);
+	        }
+	        if (diet != null && !diet.isEmpty()) {
+	            builder.queryParam("diet", diet);
+	        }
+	        if (exclusions != null && !exclusions.isEmpty()) {
+	            builder.queryParam("exclude", exclusions);
+	        }
 
-        // Making the GET request and returning the response
-     // Log the final URI
-        logger.info("Requesting URI: {}", uri.toString());
-        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+	        URI uri = builder.build().toUri();
+	        logger.info("Requesting URI: {}", uri.toString());
+	        return uri;
+	    }
 
-        return response;
-    }
-    @GetMapping("/mealplanner/day")
-    public ResponseEntity<String> getDayMeals(
-            @RequestParam(value = "targetCalories", required = false) String numCalories,
-            @RequestParam(required = false) String diet,
-            @RequestParam(value = "exclude", required = false) String exclusions) {
-
-        RestTemplate restTemplate = new RestTemplate();
-        
-       
-        // Building the URI
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + path)
-                .queryParam("apiKey", apiKey)
-                .queryParam("timeFrame", "day");
-
-        if (numCalories != null && !numCalories.isEmpty()) {
-            builder.queryParam("targetCalories", numCalories);
-        }
-        if (diet != null && !diet.isEmpty()) {
-            builder.queryParam("diet", diet);
-        }
-        if (exclusions != null && !exclusions.isEmpty()) {
-            builder.queryParam("exclude", exclusions);
-        }
-
-        URI uri = builder.build().toUri();
-
-
-        // Making the GET request and returning the response
-     // Log the final URI
-        logger.info("Requesting URI: {}", uri.toString());
-        ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
-
-        return response;
-    } 
+	    private ResponseEntity<String> makeRequest(URI uri) {
+	        RestTemplate restTemplate = new RestTemplate();
+	        return restTemplate.getForEntity(uri, String.class);
+	    }
+	
 }
